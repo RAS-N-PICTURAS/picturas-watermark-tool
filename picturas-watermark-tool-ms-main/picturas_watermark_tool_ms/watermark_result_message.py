@@ -7,8 +7,13 @@ from .watermark_request_message import WatermarkRequestMessage
 
 
 class WatermarkResultOutput(BaseModel):
-    type: str
-    imageURI: str
+    messageId: str
+    user_id: str
+    project_id: str
+    status: str
+    error: dict
+    output: dict
+    metadata: dict
 
 
 class WatermarkResultMessage(ResultMessage[WatermarkResultOutput]):
@@ -17,6 +22,11 @@ class WatermarkResultMessage(ResultMessage[WatermarkResultOutput]):
         super().__init__(request, tool_result, exception, *args)
         if exception is None:
             self.output = WatermarkResultOutput(
-                type="image",
-                imageURI=request.parameters.outputImageURI,
+                messageId=tool_result["messageId"],
+                user_id=tool_result["user_id"],
+                project_id=tool_result["project_id"],
+                status=tool_result["status"],
+                error=tool_result.get("error", {}),
+                output=tool_result.get("output", {}),
+                metadata=tool_result["metadata"]
             )
